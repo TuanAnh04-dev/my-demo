@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo TTS với Web Speech API</title>
+</head>
+<body>
+  <h1 style="text-align: center;">Lần đầu 2 push github</h1>
+  <h3>Chuyển Văn Bản Thành Giọng Nói</h1>
+  <textarea id="text" rows="5" cols="50" placeholder="Nhập nội dung cần đọc..." autofocus></textarea>
+  <br>
+  <button id="speak">Speak</button>
+  
+  <script>
+    // Kiểm tra xem browser có hỗ trợ speechSynthesis không
+    if (!('speechSynthesis' in window)) {
+      alert("Trình duyệt của bạn không hỗ trợ TTS.");
+    }
+
+    // Lấy tham chiếu tới phần tử
+    const speakButton = document.getElementById("speak");
+    const textArea = document.getElementById("text");
+
+    // Hàm để thực hiện chuyển văn bản thành giọng nói
+    function speakText() {
+  const text = document.getElementById("text").value;
+  if (text.trim() === "") return;
+  
+  // Tạo đối tượng SpeechSynthesisUtterance với văn bản cần đọc
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "vi-VN"; // Chỉ định ngôn ngữ là tiếng Việt
+
+  // Lấy danh sách các giọng nói có sẵn và tìm giọng tiếng Việt
+  let voices = speechSynthesis.getVoices();
+  
+  // Nếu chưa có giọng, gắn sự kiện voiceschanged để lấy danh sách sau
+  if (!voices || voices.length === 0) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      voices = speechSynthesis.getVoices();
+      const vietVoice = voices.find(voice => voice.lang === 'vi-VN');
+      if (vietVoice) {
+        utterance.voice = vietVoice;
+      }
+      speechSynthesis.speak(utterance);
+    };
+  } else {
+    const vietVoice = voices.find(voice => voice.lang === 'vi-VN');
+    if (vietVoice) {
+      utterance.voice = vietVoice;
+    }
+    speechSynthesis.speak(utterance);
+  }
+}
+
+document.getElementById("speak").addEventListener("click", speakText);
+
+
+    // Gắn sự kiện click vào nút Speak
+    speakButton.addEventListener("click", speakText);
+    
+  </script>
+</body>
+</html>
